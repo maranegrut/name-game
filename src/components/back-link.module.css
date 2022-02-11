@@ -1,0 +1,5 @@
+.back {
+  background-image: url("/images/back-arrow.svg");
+  background-repeat: no-repeat;
+  top: calc(50% - 20.5px / 2 - 459.75px);
+}

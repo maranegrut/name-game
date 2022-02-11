@@ -1,0 +1,26 @@
+.statsSection {
+  text-align: center;
+  position: relative;
+  top: 50vh;
+}
+.statsContainer {
+  display: flex;
+  justify-content: space-between;
+  margin: auto;
+  width: 50%;
+}
+
+@media screen and (max-width: 1350px) {
+  .statsContainer {
+    width: 70%;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .statsSection {
+    top: 45vh;
+  }
+  .statsContainer {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,15 @@
+.nav {
+  background-color: #223547;
+  font-size: 2rem;
+  display: flex;
+  padding: 30px;
+  position: relative;
+  z-index: 2;
+  height: 35px;
+}
+
+.logo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}

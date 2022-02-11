@@ -1,0 +1,23 @@
+.section {
+  background-color: #223547;
+  background-image: url("../../public/images/congrats-design.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 50vh;
+  width: 100vw;
+  top: 0;
+  text-align: center;
+  position: absolute;
+}
+
+.congratsHeading {
+  color: white;
+  margin: auto;
+  padding-top: 30vh;
+}
+
+@media screen and (max-width: 600px) {
+  .congratsHeading {
+    width: 90%;
+  }
+}

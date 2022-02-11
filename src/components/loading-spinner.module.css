@@ -1,0 +1,22 @@
+.loadingSpinner {
+  border: 14px solid rgb(233, 233, 233);
+  border-top: 14px solid #223547;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1.5s linear infinite;
+  margin: auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spinnerContainer {
+  padding-top: 200px;
+}

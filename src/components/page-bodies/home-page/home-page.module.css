@@ -1,0 +1,36 @@
+.background {
+  background-color: #223547;
+  color: white;
+  height: auto;
+  min-height: 100vh;
+  width: 100vw;
+  text-align: center;
+}
+
+.pageContent {
+  height: 100%;
+  padding-top: 5%;
+}
+
+.textContainer {
+  padding: 60px;
+}
+
+.bottomNavigation {
+  width: 100%;
+  height: 100px;
+  position: fixed;
+  bottom: 0;
+  z-index: 5;
+  align-items: center;
+}
+
+@media screen and (max-width: 600px) {
+  .content {
+    padding: 15% 5% 5% 5%;
+  }
+
+  .textContainer {
+    padding: 30px;
+  }
+}

@@ -1,0 +1,36 @@
+body {
+  margin: 0;
+}
+
+html {
+  font-family: "Helvetica", "Opens Sans", "Lato", "sans-serif";
+  line-height: 32px;
+  font-weight: 400;
+  color: #223547;
+}
+
+p {
+  font-size: 24px;
+  margin: 16px;
+}
+
+h1,
+h2 {
+  font-size: 40px;
+  line-height: 48px;
+  font-weight: 700;
+  margin: 16px;
+}
+
+@media screen and (max-width: 600px) {
+  h1,
+  h2 {
+    font-size: 32px;
+    line-height: 35px;
+    margin: 12px;
+  }
+  p {
+    font-size: 20px;
+    margin: 12px;
+  }
+}
