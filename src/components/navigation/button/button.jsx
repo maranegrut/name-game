@@ -12,6 +12,7 @@ const Button = ({ onClick, children, disabled }) => {
         handleButtonClick(event);
       }}
       disabled={disabled}
+      data-testid={"navigation-button"}
     >
       {children}
     </button>

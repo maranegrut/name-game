@@ -3,24 +3,21 @@ import "@testing-library/jest-dom/extend-expect";
 import { cleanup, render, screen } from "@testing-library/react";
 import { axe, toHaveNoViolations } from "jest-axe";
 import React from "react";
-import GamePage from "./game-page";
-import GameContextProvider from "../../../context/game-context";
+import ErrorState from "./error-state";
 
 expect.extend(toHaveNoViolations);
 
-describe("Game Page Component", () => {
+describe("Error State Component", () => {
   afterEach(() => {
     cleanup();
   });
 
   it("expects component to have no accessibility violations", async () => {
     const { container } = render(
-      <GameContextProvider>
-        <GamePage />
-      </GameContextProvider>
+      <ErrorState error={"Oops, there was an error"} />
     );
-    const link = await screen.findByTestId("gamepage");
-    expect(link).toBeInTheDocument();
+    const photo = await screen.findByTestId("error-state-container");
+    expect(photo).toBeInTheDocument();
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });

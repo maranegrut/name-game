@@ -1,23 +1,24 @@
-import Button from "../../button";
-import Header from "../../header";
+import Button from "../../navigation/button/button";
+import Header from "../../header/header";
 import { useRouter } from "next/router";
-import CongratsSection from "../../congrats-section";
+import CongratsSection from "../../congrats-section/congrats-section";
 import styles from "./stats-page.module.css";
-import StatsSection from "../../stats-section";
+import StatsSection from "../../stats-section/stats-section";
 import { useContext, useEffect } from "react";
 import { GameContext } from "../../../context/game-context";
 
 const StatsPage = () => {
   const gameCtx = useContext(GameContext);
   const router = useRouter();
-  console.log(gameCtx);
 
   const { correctAnswers, viewedQuestions } = gameCtx;
   const score = `${correctAnswers}/${viewedQuestions.length}`;
 
   useEffect(() => {
     const existingGameState = JSON.parse(localStorage.getItem("game-state"));
-    gameCtx.restore(existingGameState);
+    if (existingGameState) {
+      gameCtx.restore(existingGameState);
+    }
   }, []);
 
   const returnHomeHandler = () => {
@@ -25,8 +26,8 @@ const StatsPage = () => {
   };
 
   return (
-    <>
-      <Header />
+    <div data-testid={"statspage"}>
+      <Header shouldAllowBackClick={false} />
       <div>
         <CongratsSection score={score} />
         <div className={styles.buttonContainer}>
@@ -34,7 +35,7 @@ const StatsPage = () => {
         </div>
         <StatsSection />
       </div>
-    </>
+    </div>
   );
 };
 

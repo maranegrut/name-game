@@ -1,13 +1,14 @@
-import Header from "../../header";
-import EmployeePhoto from "../../employee-photo";
+import Header from "../../header/header";
+import EmployeePhoto from "../../employee-photo/employee-photo";
 import styles from "./game-page.module.css";
-import Button from "../../button";
+import Button from "../../navigation/button/button";
 import { useEffect, useState, useContext, useRef } from "react";
 import { useRouter } from "next/router";
 import { GameContext } from "../../../context/game-context";
-import LoadingSpinner from "../../loading-spinner";
-import ErrorState from "../../error-state";
+import LoadingSpinner from "../../loading-spinner/loading-spinner";
+import ErrorState from "../../error-state/error-state";
 import { defaultImages } from "../../../utilities/default-images";
+// import { selectEmployeesForNewQuestion } from "../../../helpers/randomly-select-employees";
 
 const GamePage = () => {
   const [allEmployees, setAllEmployees] = useState([]);
@@ -21,18 +22,15 @@ const GamePage = () => {
   const gameCtx = useContext(GameContext);
   const { currentQuestion, viewedQuestions } = gameCtx;
 
+  const disabled = !gameCtx.currentQuestion.chosenAnswer;
   const hasAnswered = currentQuestion.chosenAnswer ?? false;
   const chosenAnswer = currentQuestion.chosenAnswer;
   const featuredEmployee = currentQuestion.correctAnswer;
+  let randomEmployees = currentQuestion.answerChoices;
   let answeredCorrectly;
   if (chosenAnswer && featuredEmployee) {
     answeredCorrectly = chosenAnswer.id === featuredEmployee.id;
   }
-
-  const disabled = !gameCtx.currentQuestion.chosenAnswer;
-
-  let randomEmployees = currentQuestion.answerChoices;
-
   const selectEmployeesForNewQuestion = (employeeData) => {
     randomEmployees = [];
     // Get six random employees
@@ -72,8 +70,9 @@ const GamePage = () => {
 
   useEffect(async () => {
     const existingGameState = JSON.parse(localStorage.getItem("game-state"));
-
-    gameCtx.restore(existingGameState);
+    if (existingGameState) {
+      gameCtx.restore(existingGameState);
+    }
     setIsLoading(true);
 
     try {
@@ -197,14 +196,14 @@ const GamePage = () => {
   }
 
   return (
-    <>
+    <div data-testid={"gamepage"}>
       <Header
         url={"/play"} //TODO: look into removing this
         onBackClick={backClickHandler}
-        isOnFirstQuestion={currentQuestion.questionNumber === 1}
+        shouldAllowBackClick={currentQuestion.questionNumber !== 1}
       />
       <div className={styles.pageContainer}>{pageContent}</div>
-    </>
+    </div>
   );
 };
 

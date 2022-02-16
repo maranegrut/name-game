@@ -6,9 +6,17 @@ const EmployeePhoto = ({ photoUrl, onClick, overlay }) => {
   const neutralClassNames = styles.overlayNeutral;
 
   return (
-    <div className={styles.photoAndOverlayContainer}>
+    <div
+      className={styles.photoAndOverlayContainer}
+      data-testid={"photo-and-overlay-container"}
+    >
       <div className={styles.photoContainer} onClick={onClick}>
-        <img className={styles.photo} src={photoUrl}></img>
+        <img
+          className={styles.photo}
+          src={photoUrl}
+          data-testid={"employee-photo"}
+          alt={"employee headshot"}
+        ></img>
       </div>
       <div
         className={
@@ -16,6 +24,7 @@ const EmployeePhoto = ({ photoUrl, onClick, overlay }) => {
           (overlay === "incorrect" ? incorrectClassNames : undefined) ||
           (overlay === "neutral" ? neutralClassNames : undefined)
         }
+        data-testid={"overlay"}
       ></div>
     </div>
   );

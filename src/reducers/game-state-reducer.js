@@ -77,4 +77,6 @@ export const GameStateReducer = (state, action) => {
     localStorage.setItem("game-state", JSON.stringify(action.existingSession));
     return { ...action.existingSession };
   }
+
+  return { ...defaultGameSession };
 };

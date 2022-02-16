@@ -29,12 +29,12 @@
 
 .overlayCorrect {
   background-color: rgba(52, 199, 89, 0.6);
-  background-image: url("../../public/images/correct-mark.svg");
+  background-image: url("../../../public/images/correct-mark.svg");
 }
 
 .overlayIncorrect {
   background-color: rgba(255, 59, 48, 0.6);
-  background-image: url("../../public/images/incorrect-mark.svg");
+  background-image: url("../../../public/images/incorrect-mark.svg");
 }
 
 .overlayNeutral {

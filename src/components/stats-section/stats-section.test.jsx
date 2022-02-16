@@ -3,12 +3,12 @@ import "@testing-library/jest-dom/extend-expect";
 import { cleanup, render, screen } from "@testing-library/react";
 import { axe, toHaveNoViolations } from "jest-axe";
 import React from "react";
-import GamePage from "./game-page";
-import GameContextProvider from "../../../context/game-context";
+import GameContextProvider from "../../context/game-context";
+import StatsSection from "./stats-section";
 
 expect.extend(toHaveNoViolations);
 
-describe("Game Page Component", () => {
+describe("End-of-Game Stats Section Component", () => {
   afterEach(() => {
     cleanup();
   });
@@ -16,11 +16,11 @@ describe("Game Page Component", () => {
   it("expects component to have no accessibility violations", async () => {
     const { container } = render(
       <GameContextProvider>
-        <GamePage />
+        <StatsSection />
       </GameContextProvider>
     );
-    const link = await screen.findByTestId("gamepage");
-    expect(link).toBeInTheDocument();
+    const photo = await screen.findByTestId("stats-section");
+    expect(photo).toBeInTheDocument();
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });

@@ -1,4 +1,4 @@
-import Button from "../../button";
+import Button from "../../navigation/button/button";
 import styles from "./home-page.module.css";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -18,9 +18,14 @@ const HomePage = () => {
   };
 
   return (
-    <div className={styles.background}>
+    <div className={styles.background} data-testid={"homepage"}>
       <div className={styles.pageContent}>
-        <Image src={"/images/home-page.svg"} width={463} height={463}></Image>
+        <Image
+          src={"/images/home-page.svg"}
+          width={463}
+          height={463}
+          alt={"homepage logo"}
+        ></Image>
         <div className={styles.textContainer}>
           <p>Try matching the WillowTree employee to their photo.</p>
         </div>

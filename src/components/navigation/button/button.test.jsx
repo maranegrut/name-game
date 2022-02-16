@@ -3,25 +3,29 @@ import "@testing-library/jest-dom/extend-expect";
 import { cleanup, render, screen } from "@testing-library/react";
 import { axe, toHaveNoViolations } from "jest-axe";
 import React from "react";
-import GamePage from "./game-page";
-import GameContextProvider from "../../../context/game-context";
+import Button from "./button";
 
 expect.extend(toHaveNoViolations);
 
-describe("Game Page Component", () => {
+describe("Button Component", () => {
   afterEach(() => {
     cleanup();
   });
 
   it("expects component to have no accessibility violations", async () => {
     const { container } = render(
-      <GameContextProvider>
-        <GamePage />
-      </GameContextProvider>
+      <Button disabled={false} children={"Click me!"} />
     );
-    const link = await screen.findByTestId("gamepage");
-    expect(link).toBeInTheDocument();
+    const button = await screen.findByTestId("navigation-button");
+    expect(button).toBeInTheDocument();
     const results = await axe(container);
     expect(results).toHaveNoViolations();
+  });
+
+  it("expects button to render disabled", async () => {
+    render(<Button disabled={true} children={"Click me!"} />);
+    const button = await screen.findByTestId("navigation-button");
+    expect(button).toBeInTheDocument();
+    expect(button).toBeDisabled();
   });
 });

@@ -61,7 +61,7 @@ const GameContextProvider = (props) => {
     });
   };
 
-  console.log("game state at bottom", gameState);
+  // console.log("game state at bottom", gameState);
   const gameContext = {
     correctAnswers: gameState.correctAnswers,
     viewedQuestions: gameState.viewedQuestions,

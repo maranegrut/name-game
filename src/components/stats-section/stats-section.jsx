@@ -1,34 +1,30 @@
 import styles from "./stats-section.module.css";
 import { useContext } from "react";
-import { GameContext } from "../context/game-context";
+import { GameContext } from "../../context/game-context";
+import { calculateStats } from "../../helpers/calculate-stats";
 
 const StatsSection = () => {
   const gameCtx = useContext(GameContext);
 
   const { correctAnswers, viewedQuestions } = gameCtx;
-  const percentCorrect = Math.round(
-    (correctAnswers / viewedQuestions.length) * 100
-  );
-  const percentIncorrect = 100 - percentCorrect;
 
-  const selectionTimes = gameCtx.viewedQuestions.map(
-    (question) => question.selectionTime
+  const { percentCorrect, percentIncorrect, averageTime } = calculateStats(
+    correctAnswers,
+    viewedQuestions
   );
-  const totalTime = selectionTimes.reduce((a, b) => a + b, 0);
-  const averageTime = (totalTime / selectionTimes.length).toFixed(1);
 
   return (
-    <section className={styles.statsSection}>
+    <section className={styles.statsSection} data-testid={"stats-section"}>
       <div className={styles.statsContainer}>
-        <div>
+        <div data-testid={"correct-selections"}>
           <h2>{`${percentCorrect}%`}</h2>
           <p>Correct Selections</p>
         </div>
-        <div>
+        <div data-testid={"incorrect-selections"}>
           <h2>{`${percentIncorrect}%`}</h2>
           <p>Incorrect Selections</p>
         </div>
-        <div>
+        <div daat-testid={"avg-selection-time"}>
           <h2>{`${averageTime} sec`}</h2>
           <p>Avg Selection Time</p>
         </div>
