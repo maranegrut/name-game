@@ -9,6 +9,7 @@ import LoadingSpinner from "../../loading-spinner/loading-spinner";
 import ErrorState from "../../error-state/error-state";
 import { defaultImages } from "../../../utilities/default-images";
 // import { selectEmployeesForNewQuestion } from "../../../helpers/randomly-select-employees";
+import { GameContextActionTypes } from "../../../reducers/game-state-reducer";
 
 const GamePage = () => {
   const [allEmployees, setAllEmployees] = useState([]);
@@ -59,10 +60,13 @@ const GamePage = () => {
   const createNewQuestion = (employeeData) => {
     selectEmployeesForNewQuestion(employeeData);
 
-    gameCtx.addNewQuestion({
-      questionNumber: viewedQuestions.length + 1,
-      answerChoices: randomEmployees,
-      correctAnswer: featuredEmployee,
+    gameCtx.dispatchAction({
+      type: GameContextActionTypes.NewQuestion,
+      question: {
+        questionNumber: viewedQuestions.length + 1,
+        answerChoices: randomEmployees,
+        correctAnswer: featuredEmployee,
+      },
     });
 
     clearAndRestartTimer();
@@ -101,19 +105,22 @@ const GamePage = () => {
       setError(error.message);
     }
     setIsLoading(false);
-  }, []); //TODO: look into dependencies here
+  }, []);
 
   const answerHandler = (event) => {
     if (hasAnswered) return;
 
     clearInterval(timer.current);
-    timer.current = null; //TODO: look into these two timer lines
+    timer.current = null;
 
     hasAnswered = true;
     const chosenAnswer = randomEmployees.find(
       (employee) => employee.headshot.url === event.target.src
     );
-    gameCtx.updateQuestion({ chosenAnswer, selectionTime });
+    gameCtx.dispatchAction({
+      type: GameContextActionTypes.UpdateQuestion,
+      answer: { chosenAnswer, selectionTime },
+    });
   };
 
   const backClickHandler = () => {
