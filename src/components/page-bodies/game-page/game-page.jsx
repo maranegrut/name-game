@@ -8,7 +8,11 @@ import { GameContext } from "../../../context/game-context";
 import LoadingSpinner from "../../loading-spinner/loading-spinner";
 import ErrorState from "../../error-state/error-state";
 import { defaultImages } from "../../../utilities/default-images";
-// import { selectEmployeesForNewQuestion } from "../../../helpers/randomly-select-employees";
+import {
+  selectEmployeesForNewQuestion,
+  chooseFeaturedEmployee,
+  determineOverlayStyle,
+} from "../../../helpers/game-page-helpers";
 import { GameContextActionTypes } from "../../../reducers/game-state-reducer";
 
 const GamePage = () => {
@@ -28,26 +32,6 @@ const GamePage = () => {
   const chosenAnswer = currentQuestion.chosenAnswer;
   const featuredEmployee = currentQuestion.correctAnswer;
   let randomEmployees = currentQuestion.answerChoices;
-  let answeredCorrectly;
-  if (chosenAnswer && featuredEmployee) {
-    answeredCorrectly = chosenAnswer.id === featuredEmployee.id;
-  }
-  const selectEmployeesForNewQuestion = (employeeData) => {
-    randomEmployees = [];
-    // Get six random employees
-    let i = 0;
-    while (i < 6) {
-      const randomEmployee =
-        employeeData[Math.floor(Math.random() * employeeData.length)];
-      if (!randomEmployees.includes(randomEmployee)) {
-        randomEmployees.push(randomEmployee);
-        i++;
-      }
-    }
-    // Select employee who will be the correct answer
-    featuredEmployee =
-      randomEmployees[Math.floor(Math.random() * randomEmployees.length)];
-  };
 
   const clearAndRestartTimer = () => {
     setSelectionTime(0);
@@ -58,7 +42,8 @@ const GamePage = () => {
   };
 
   const createNewQuestion = (employeeData) => {
-    selectEmployeesForNewQuestion(employeeData);
+    randomEmployees = selectEmployeesForNewQuestion(employeeData);
+    featuredEmployee = chooseFeaturedEmployee(randomEmployees);
 
     gameCtx.dispatchAction({
       type: GameContextActionTypes.NewQuestion,
@@ -72,38 +57,40 @@ const GamePage = () => {
     clearAndRestartTimer();
   };
 
-  useEffect(async () => {
+  useEffect(() => {
     const existingGameState = JSON.parse(localStorage.getItem("game-state"));
     if (existingGameState) {
       gameCtx.restore(existingGameState);
     }
     setIsLoading(true);
-
-    try {
-      const response = await fetch(
-        "https://namegame.willowtreeapps.com/api/v1.0/profiles"
-      );
-      if (!response.ok) {
-        throw new Error("Uh, oh! Could not fetch employees");
-      }
-      const employeeData = await response.json();
-      // Filter out employees with no image or with default WT image
-      const sanitizedEmployeeData = employeeData.filter((employee) => {
-        return (
-          employee.headshot.url !== undefined &&
-          !defaultImages.includes(employee.headshot.url)
+    const getDataAndQuestion = async () => {
+      try {
+        const response = await fetch(
+          "https://namegame.willowtreeapps.com/api/v1.0/profiles"
         );
-      });
-      setAllEmployees(sanitizedEmployeeData);
-      // Only create a new question if a new session is being started
-      // When a page is refreshed and this runs, existing question is shown
-      // Instead of a fresh question
-      if (existingGameState.viewedQuestions.length === 0) {
-        createNewQuestion(sanitizedEmployeeData);
+        if (!response.ok) {
+          throw new Error("Uh, oh! Could not fetch employees");
+        }
+        const employeeData = await response.json();
+        // Filter out employees with no image or with default WT image
+        const sanitizedEmployeeData = employeeData.filter((employee) => {
+          return (
+            employee.headshot.url !== undefined &&
+            !defaultImages.includes(employee.headshot.url)
+          );
+        });
+        setAllEmployees(sanitizedEmployeeData);
+        // Only create a new question if a new session is being started
+        // When a page is refreshed and this runs, existing question is shown
+        // Instead of a fresh question
+        if (existingGameState.viewedQuestions.length === 0) {
+          createNewQuestion(sanitizedEmployeeData);
+        }
+      } catch (error) {
+        setError(error.message);
       }
-    } catch (error) {
-      setError(error.message);
-    }
+    };
+    getDataAndQuestion();
     setIsLoading(false);
   }, []);
 
@@ -173,15 +160,12 @@ const GamePage = () => {
             // correctly, incorrectly, or not at all
             let overlay;
             if (employee && chosenAnswer) {
-              if (employee.id === chosenAnswer.id && answeredCorrectly) {
-                overlay = "correct";
-              }
-              if (employee.id === chosenAnswer.id && !answeredCorrectly) {
-                overlay = "incorrect";
-              }
-              if (hasAnswered && employee.id !== chosenAnswer.id) {
-                overlay = "neutral";
-              }
+              overlay = determineOverlayStyle(
+                employee.id,
+                chosenAnswer.id,
+                featuredEmployee.id,
+                hasAnswered
+              );
             }
             return (
               <EmployeePhoto

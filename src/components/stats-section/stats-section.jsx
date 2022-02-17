@@ -1,7 +1,7 @@
 import styles from "./stats-section.module.css";
 import { useContext } from "react";
 import { GameContext } from "../../context/game-context";
-import { calculateStats } from "../../helpers/calculate-stats";
+import { calculateStats } from "../../helpers/stats-helpers";
 
 const StatsSection = () => {
   const gameCtx = useContext(GameContext);
