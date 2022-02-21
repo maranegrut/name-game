@@ -26,7 +26,7 @@
 }
 
 @media screen and (max-width: 600px) {
-  .content {
+  .pageContent {
     padding: 15% 5% 5% 5%;
   }
 

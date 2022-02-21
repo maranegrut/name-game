@@ -178,9 +178,11 @@ const GamePage = () => {
           })}
         </div>
         <div className={styles.bottomNavigation}>
-          <Button onClick={continueHandler} disabled={disabled}>
-            Continue
-          </Button>
+          <div className={styles.buttonContainer}>
+            <Button onClick={continueHandler} disabled={disabled}>
+              Continue
+            </Button>
+          </div>
         </div>
       </>
     );

@@ -17,6 +17,9 @@
 }
 
 @media screen and (max-width: 600px) {
+  .section {
+    background-size: 38%;
+  }
   .congratsHeading {
     width: 90%;
   }
