@@ -25,6 +25,20 @@
   align-items: center;
 }
 
+.button {
+  color: white;
+  padding: 0.75em;
+  height: 56px;
+  width: 20%;
+  background: #15659d;
+  border-radius: 14px;
+  border: 0px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 17px;
+  position: relative;
+}
+
 @media screen and (max-width: 600px) {
   .pageContent {
     padding: 15% 5% 5% 5%;

@@ -4,18 +4,14 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import { GameContext } from "../../../context/game-context";
 import { useContext, useEffect } from "react";
+import AnchorLink from "../../navigation/anchor-link/anchor-link";
 
 const HomePage = () => {
-  const router = useRouter();
   const gameCtx = useContext(GameContext);
 
   useEffect(() => {
     gameCtx.clearContext();
   }, []);
-
-  const playHandler = () => {
-    router.push("/play");
-  };
 
   return (
     <div className={styles.background} data-testid={"homepage"}>
@@ -31,7 +27,7 @@ const HomePage = () => {
         </div>
       </div>
       <div className={styles.bottomNavigation}>
-        <Button onClick={playHandler}>Play!</Button>
+        <AnchorLink url={"/play"}>Play!</AnchorLink>
       </div>
     </div>
   );

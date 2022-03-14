@@ -14,9 +14,10 @@ import {
   determineOverlayStyle,
 } from "../../../helpers/game-page-helpers";
 import { GameContextActionTypes } from "../../../reducers/game-state-reducer";
+import { fetchSanitizedEmployeeData } from "../../../utilities/request";
 
 const GamePage = () => {
-  const [allEmployees, setAllEmployees] = useState([]);
+  const [allEmployees, setAllEmployees] = useState([]); //store this in game context
   const [selectionTime, setSelectionTime] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -52,6 +53,8 @@ const GamePage = () => {
         answerChoices: randomEmployees,
         correctAnswer: featuredEmployee,
       },
+      //add employee data here
+      //or add employees to context - preferred
     });
 
     clearAndRestartTimer();
@@ -63,22 +66,10 @@ const GamePage = () => {
       gameCtx.restore(existingGameState);
     }
     setIsLoading(true);
-    const getDataAndQuestion = async () => {
+    const getEmployeeData = async () => {
       try {
-        const response = await fetch(
-          "https://namegame.willowtreeapps.com/api/v1.0/profiles"
-        );
-        if (!response.ok) {
-          throw new Error("Uh, oh! Could not fetch employees");
-        }
-        const employeeData = await response.json();
-        // Filter out employees with no image or with default WT image
-        const sanitizedEmployeeData = employeeData.filter((employee) => {
-          return (
-            employee.headshot.url !== undefined &&
-            !defaultImages.includes(employee.headshot.url)
-          );
-        });
+        const sanitizedEmployeeData = await fetchSanitizedEmployeeData();
+
         setAllEmployees(sanitizedEmployeeData);
         // Only create a new question if a new session is being started
         // When a page is refreshed and this runs, existing question is shown
@@ -86,12 +77,12 @@ const GamePage = () => {
         if (existingGameState.viewedQuestions.length === 0) {
           createNewQuestion(sanitizedEmployeeData);
         }
+        setIsLoading(false);
       } catch (error) {
         setError(error.message);
       }
     };
-    getDataAndQuestion();
-    setIsLoading(false);
+    getEmployeeData();
   }, []);
 
   const answerHandler = (event) => {

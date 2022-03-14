@@ -1,9 +1,13 @@
 import styles from "./employee-photo.module.css";
+import classNames from "classnames";
 
 const EmployeePhoto = ({ photoUrl, onClick, overlay }) => {
-  const correctClassNames = `${styles.answerOverlay} ${styles.overlayCorrect}`;
-  const incorrectClassNames = `${styles.answerOverlay} ${styles.overlayIncorrect}`;
-  const neutralClassNames = styles.overlayNeutral;
+  const overlayClassName = classNames({
+    [styles.overlayNeutral]: overlay === "neutral",
+    [styles.answerOverlay]: overlay === "correct" || overlay === "incorrect",
+    [styles.overlayCorrect]: overlay === "correct",
+    [styles.overlayIncorrect]: overlay === "incorrect",
+  });
 
   return (
     <div
@@ -18,14 +22,7 @@ const EmployeePhoto = ({ photoUrl, onClick, overlay }) => {
           alt={"employee headshot"}
         ></img>
       </div>
-      <div
-        className={
-          (overlay === "correct" ? correctClassNames : undefined) ||
-          (overlay === "incorrect" ? incorrectClassNames : undefined) ||
-          (overlay === "neutral" ? neutralClassNames : undefined)
-        }
-        data-testid={"overlay"}
-      ></div>
+      <div className={overlayClassName} data-testid={"overlay"}></div>
     </div>
   );
 };

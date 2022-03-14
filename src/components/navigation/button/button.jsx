@@ -1,4 +1,4 @@
-import styles from "./button.module.css";
+import styles from "../button.module.css";
 
 const Button = ({ onClick, children, disabled }) => {
   const handleButtonClick = (event) => {
