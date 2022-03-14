@@ -1,13 +1,15 @@
 export const selectEmployeesForNewQuestion = (employeeData) => {
   const randomEmployees = [];
   // Get six random employees
-  let i = 0;
-  while (i < 6) {
-    const randomEmployee =
-      employeeData[Math.floor(Math.random() * employeeData.length)];
-    if (!randomEmployees.includes(randomEmployee)) {
-      randomEmployees.push(randomEmployee);
-      i++;
+  if (employeeData) {
+    let i = 0;
+    while (i < 6) {
+      const randomEmployee =
+        employeeData[Math.floor(Math.random() * employeeData.length)];
+      if (!randomEmployees.includes(randomEmployee)) {
+        randomEmployees.push(randomEmployee);
+        i++;
+      }
     }
   }
   return randomEmployees;

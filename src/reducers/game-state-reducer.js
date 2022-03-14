@@ -1,3 +1,8 @@
+import {
+  selectEmployeesForNewQuestion,
+  chooseFeaturedEmployee,
+} from "../helpers/game-page-helpers";
+
 export const GameContextActionTypes = {
   NewQuestion: "NEW_QUESTION",
   UpdateQuestion: "UPDATE_QUESTION",
@@ -14,7 +19,7 @@ export const defaultGameSession = {
   viewedQuestions: [],
   currentQuestion: {
     questionNumber: 0,
-    answerChoices: [{}],
+    answerChoices: [],
     correctAnswer: {},
     chosenAnswer: {},
     selectionTime: 0,
@@ -23,11 +28,22 @@ export const defaultGameSession = {
 
 export const GameStateReducer = (state, action) => {
   if (action.type === GameContextActionTypes.NewQuestion) {
-    const updatedQuestions = [...state.viewedQuestions, action.question];
+    const randomEmployees = selectEmployeesForNewQuestion(
+      action.question.employeeData
+    );
+    const featuredEmployee = chooseFeaturedEmployee(randomEmployees);
+
+    const newQuestion = {
+      questionNumber: action.question.questionNumber,
+      answerChoices: randomEmployees,
+      correctAnswer: featuredEmployee,
+    };
+
+    const updatedQuestions = [...state.viewedQuestions, newQuestion];
     return {
       ...state,
       viewedQuestions: updatedQuestions,
-      currentQuestion: action.question,
+      currentQuestion: newQuestion,
     };
   }
   if (action.type === GameContextActionTypes.UpdateQuestion) {

@@ -7,11 +7,7 @@ import { useRouter } from "next/router";
 import { GameContext } from "../../../context/game-context";
 import LoadingSpinner from "../../loading-spinner/loading-spinner";
 import ErrorState from "../../error-state/error-state";
-import {
-  selectEmployeesForNewQuestion,
-  chooseFeaturedEmployee,
-  determineOverlayStyle,
-} from "../../../helpers/game-page-helpers";
+import { determineOverlayStyle } from "../../../helpers/game-page-helpers";
 import { GameContextActionTypes } from "../../../reducers/game-state-reducer";
 import { fetchSanitizedEmployeeData } from "../../../utilities/request";
 
@@ -30,7 +26,7 @@ const GamePage = () => {
   const hasAnswered = currentQuestion.chosenAnswer ?? false;
   const chosenAnswer = currentQuestion.chosenAnswer;
   const featuredEmployee = currentQuestion.correctAnswer;
-  let randomEmployees = currentQuestion.answerChoices;
+  const randomEmployees = currentQuestion.answerChoices ?? [];
 
   const clearAndRestartTimer = () => {
     setSelectionTime(0);
@@ -41,18 +37,12 @@ const GamePage = () => {
   };
 
   const createNewQuestion = (employeeData) => {
-    randomEmployees = selectEmployeesForNewQuestion(employeeData);
-    featuredEmployee = chooseFeaturedEmployee(randomEmployees);
-
     gameCtx.dispatchAction({
       type: GameContextActionTypes.NewQuestion,
       question: {
+        employeeData: employeeData,
         questionNumber: viewedQuestions.length + 1,
-        answerChoices: randomEmployees,
-        correctAnswer: featuredEmployee,
       },
-      //add employee data here
-      //or add employees to context - preferred
     });
 
     clearAndRestartTimer();
