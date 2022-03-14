@@ -5,9 +5,11 @@ export const GameContextActionTypes = {
   NavigateBack: "NAVIGATE_BACK",
   ClearContext: "CLEAR_CONTEXT",
   Restore: "RESTORE",
+  StoreData: "STORE_DATA",
 };
 
 export const defaultGameSession = {
+  employeeData: [],
   correctAnswers: 0,
   viewedQuestions: [],
   currentQuestion: {
@@ -76,6 +78,9 @@ export const GameStateReducer = (state, action) => {
   if (action.type === GameContextActionTypes.Restore) {
     localStorage.setItem("game-state", JSON.stringify(action.existingSession));
     return { ...action.existingSession };
+  }
+  if (action.type === GameContextActionTypes.StoreData) {
+    return { ...state, employeeData: action.employeeData };
   }
 
   return { ...defaultGameSession };

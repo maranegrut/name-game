@@ -7,7 +7,6 @@ import { useRouter } from "next/router";
 import { GameContext } from "../../../context/game-context";
 import LoadingSpinner from "../../loading-spinner/loading-spinner";
 import ErrorState from "../../error-state/error-state";
-import { defaultImages } from "../../../utilities/default-images";
 import {
   selectEmployeesForNewQuestion,
   chooseFeaturedEmployee,
@@ -17,7 +16,6 @@ import { GameContextActionTypes } from "../../../reducers/game-state-reducer";
 import { fetchSanitizedEmployeeData } from "../../../utilities/request";
 
 const GamePage = () => {
-  const [allEmployees, setAllEmployees] = useState([]); //store this in game context
   const [selectionTime, setSelectionTime] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -69,8 +67,13 @@ const GamePage = () => {
     const getEmployeeData = async () => {
       try {
         const sanitizedEmployeeData = await fetchSanitizedEmployeeData();
+        console.log(sanitizedEmployeeData);
 
-        setAllEmployees(sanitizedEmployeeData);
+        gameCtx.dispatchAction({
+          type: GameContextActionTypes.StoreData,
+          employeeData: sanitizedEmployeeData,
+        });
+
         // Only create a new question if a new session is being started
         // When a page is refreshed and this runs, existing question is shown
         // Instead of a fresh question
@@ -123,7 +126,7 @@ const GamePage = () => {
         // Otherwise create new unanswered question
       } else {
         hasAnswered = false;
-        createNewQuestion(allEmployees);
+        createNewQuestion(gameCtx.employeeData);
       }
     }
   };

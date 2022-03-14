@@ -63,6 +63,7 @@ const GameContextProvider = (props) => {
 
   console.log("game state at bottom", gameState);
   const gameContext = {
+    employeeData: gameState.employeeData,
     correctAnswers: gameState.correctAnswers,
     viewedQuestions: gameState.viewedQuestions,
     currentQuestion: gameState.currentQuestion,
