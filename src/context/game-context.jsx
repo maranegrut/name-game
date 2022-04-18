@@ -2,19 +2,13 @@ import React, { useReducer } from "react";
 import { useEffect, useState } from "react";
 import {
   GameStateReducer,
-  GameContextActionTypes,
   defaultGameSession,
 } from "../reducers/game-state-reducer";
 
 export const GameContext = React.createContext({
   defaultGameSession,
-  // addNewQuestion: (question) => {},
-  // updateQuestion: (answer) => {},
-  navigateBack: () => {},
-  nextViewedQuestion: () => {},
-  clearContext: () => {},
-  restore: () => {},
   dispatchAction: () => {},
+  getCurrentQuestion: () => {},
 });
 
 const GameContextProvider = (props) => {
@@ -31,49 +25,21 @@ const GameContextProvider = (props) => {
     localStorage.setItem("game-state", JSON.stringify(gameState));
   }, [gameState]);
 
-  // const addNewQuestionHandler = (question) => {
-  //   dispatchAction({
-  //     type: GameContextActionTypes.NewQuestion,
-  //     question: question,
-  //   });
-  // };
-  // const updateQuestionHandler = (answer) => {
-  //   dispatchAction({
-  //     type: GameContextActionTypes.UpdateQuestion,
-  //     answer: answer,
-  //   });
-  // };
+  const getCurrentQuestion = () => {
+    const currentQuestion = gameState.viewedQuestions.find(
+      (question) => question.questionNumber === gameState.currentQuestionNumber
+    );
 
-  const navigateBackHandler = () => {
-    dispatchAction({ type: GameContextActionTypes.NavigateBack });
-  };
-  const nextViewedQuestionHandler = () => {
-    dispatchAction({ type: GameContextActionTypes.NextViewedQuestion });
+    return currentQuestion ?? {};
   };
 
-  const clearContextHandler = () => {
-    dispatchAction({ type: GameContextActionTypes.ClearContext });
-  };
-  const restoreHandler = (existingSession) => {
-    dispatchAction({
-      type: GameContextActionTypes.Restore,
-      existingSession: existingSession,
-    });
-  };
-
-  console.log("game state at bottom", gameState);
+  console.log("game state at end", gameState);
   const gameContext = {
     employeeData: gameState.employeeData,
     correctAnswers: gameState.correctAnswers,
     viewedQuestions: gameState.viewedQuestions,
-    currentQuestion: gameState.currentQuestion,
-    // addNewQuestion: addNewQuestionHandler,
-    // updateQuestion: updateQuestionHandler,
-    navigateBack: navigateBackHandler,
-    nextViewedQuestion: nextViewedQuestionHandler,
-    clearContext: clearContextHandler,
-    restore: restoreHandler,
     dispatchAction,
+    getCurrentQuestion,
   };
 
   return (
