@@ -1,16 +1,15 @@
-import Button from "../../navigation/button/button";
 import styles from "./home-page.module.css";
-import { useRouter } from "next/router";
 import Image from "next/image";
 import { GameContext } from "../../../context/game-context";
 import { useContext, useEffect } from "react";
 import AnchorLink from "../../navigation/anchor-link/anchor-link";
+import { GameContextActionTypes } from "../../../reducers/game-state-reducer";
 
 const HomePage = () => {
   const gameCtx = useContext(GameContext);
 
   useEffect(() => {
-    gameCtx.clearContext();
+    gameCtx.dispatchAction({ tyoe: GameContextActionTypes.ClearContext });
   }, []);
 
   return (

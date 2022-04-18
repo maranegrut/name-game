@@ -20,13 +20,16 @@ const GamePage = () => {
   const router = useRouter();
 
   const gameCtx = useContext(GameContext);
-  const { currentQuestion, viewedQuestions } = gameCtx;
+  const viewedQuestions = gameCtx.viewedQuestions;
+  const currentQuestion = gameCtx.getCurrentQuestion();
+  const featuredEmployee = gameCtx.employeeData.find(
+    (answer) => answer.id === currentQuestion.correctAnswerId
+  );
 
-  const disabled = !gameCtx.currentQuestion.chosenAnswer;
-  const hasAnswered = currentQuestion.chosenAnswer ?? false;
-  const chosenAnswer = currentQuestion.chosenAnswer;
-  const featuredEmployee = currentQuestion.correctAnswer;
   const randomEmployees = currentQuestion.answerChoices ?? [];
+  const hasAnswered = currentQuestion.chosenAnswerId ?? false;
+  const chosenAnswerId = currentQuestion.chosenAnswerId;
+  const disabled = !currentQuestion.chosenAnswerId;
 
   const clearAndRestartTimer = () => {
     setSelectionTime(0);
@@ -36,13 +39,10 @@ const GamePage = () => {
     );
   };
 
-  const createNewQuestion = (employeeData) => {
+  const createNewQuestion = () => {
     gameCtx.dispatchAction({
       type: GameContextActionTypes.NewQuestion,
-      question: {
-        employeeData: employeeData,
-        questionNumber: viewedQuestions.length + 1,
-      },
+      questionNumber: viewedQuestions.length + 1,
     });
 
     clearAndRestartTimer();
@@ -51,13 +51,16 @@ const GamePage = () => {
   useEffect(() => {
     const existingGameState = JSON.parse(localStorage.getItem("game-state"));
     if (existingGameState) {
-      gameCtx.restore(existingGameState);
+      gameCtx.dispatchAction({
+        type: GameContextActionTypes.Restore,
+        existingGameState: existingGameState,
+      });
     }
     setIsLoading(true);
+
     const getEmployeeData = async () => {
       try {
         const sanitizedEmployeeData = await fetchSanitizedEmployeeData();
-        console.log(sanitizedEmployeeData);
 
         gameCtx.dispatchAction({
           type: GameContextActionTypes.StoreData,
@@ -65,10 +68,9 @@ const GamePage = () => {
         });
 
         // Only create a new question if a new session is being started
-        // When a page is refreshed and this runs, existing question is shown
-        // Instead of a fresh question
+        // When a page is refreshed, last viewed question is shown
         if (existingGameState.viewedQuestions.length === 0) {
-          createNewQuestion(sanitizedEmployeeData);
+          createNewQuestion();
         }
         setIsLoading(false);
       } catch (error) {
@@ -85,30 +87,29 @@ const GamePage = () => {
     timer.current = null;
 
     hasAnswered = true;
-    const chosenAnswer = randomEmployees.find(
-      (employee) => employee.headshot.url === event.target.src
-    );
     gameCtx.dispatchAction({
       type: GameContextActionTypes.UpdateQuestion,
-      answer: { chosenAnswer, selectionTime },
+      clickedPhotoUrl: event.target.src,
+      selectionTime,
     });
   };
 
   const backClickHandler = () => {
-    if (gameCtx.currentQuestion.questionNumber === 1) {
-      //TODO: add question if they want to exit game
+    if (currentQuestion.questionNumber === 1) {
       router.push("/");
     }
-    gameCtx.navigateBack();
+    gameCtx.dispatchAction({ type: GameContextActionTypes.NavigateBack });
   };
 
   const continueHandler = () => {
     // If user is not on the most recent question,
     // navigate forward to next viewed question
     const hasViewedNextQuestion =
-      gameCtx.currentQuestion.questionNumber < gameCtx.viewedQuestions.length;
+      currentQuestion.questionNumber < gameCtx.viewedQuestions.length;
     if (hasViewedNextQuestion) {
-      gameCtx.nextViewedQuestion();
+      gameCtx.dispatchAction({
+        type: GameContextActionTypes.NextViewedQuestion,
+      });
     } else {
       // Move to stats page if user has answered correctly 5 times
       if (gameCtx.correctAnswers >= 1) {
@@ -116,7 +117,7 @@ const GamePage = () => {
         // Otherwise create new unanswered question
       } else {
         hasAnswered = false;
-        createNewQuestion(gameCtx.employeeData);
+        createNewQuestion();
       }
     }
   };
@@ -143,10 +144,10 @@ const GamePage = () => {
             // Determine if employee photo was chosen
             // correctly, incorrectly, or not at all
             let overlay;
-            if (employee && chosenAnswer) {
+            if (employee && chosenAnswerId) {
               overlay = determineOverlayStyle(
                 employee.id,
-                chosenAnswer.id,
+                chosenAnswerId,
                 featuredEmployee.id,
                 hasAnswered
               );

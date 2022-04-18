@@ -16,84 +16,78 @@ export const GameContextActionTypes = {
 export const defaultGameSession = {
   employeeData: [],
   correctAnswers: 0,
+  currentQuestionNumber: 0,
   viewedQuestions: [],
-  currentQuestion: {
-    questionNumber: 0,
-    answerChoices: [],
-    correctAnswer: {},
-    chosenAnswer: {},
-    selectionTime: 0,
-  },
 };
 
 export const GameStateReducer = (state, action) => {
   if (action.type === GameContextActionTypes.NewQuestion) {
-    const randomEmployees = selectEmployeesForNewQuestion(
-      action.question.employeeData
-    );
+    const randomEmployees = selectEmployeesForNewQuestion(state.employeeData);
     const featuredEmployee = chooseFeaturedEmployee(randomEmployees);
 
     const newQuestion = {
-      questionNumber: action.question.questionNumber,
+      questionNumber: action.questionNumber,
       answerChoices: randomEmployees,
-      correctAnswer: featuredEmployee,
+      correctAnswerId: featuredEmployee.id,
     };
 
     const updatedQuestions = [...state.viewedQuestions, newQuestion];
     return {
       ...state,
       viewedQuestions: updatedQuestions,
-      currentQuestion: newQuestion,
+      currentQuestionNumber: newQuestion.questionNumber,
     };
   }
   if (action.type === GameContextActionTypes.UpdateQuestion) {
     let totalCorrect;
     let updatedViewedQuestions = [...state.viewedQuestions];
-    const currentQuestionIndex = state.viewedQuestions.findIndex(
-      (question) => question === state.currentQuestion
-    );
+
+    const currentQuestionIndex = state.currentQuestionNumber - 1;
+    const existingCurrentQuestion = state.viewedQuestions[currentQuestionIndex];
+
+    const chosenAnswerId = existingCurrentQuestion.answerChoices.find(
+      (employee) => employee.headshot.url === action.clickedPhotoUrl
+    ).id;
+
     const updatedCurrentQuestion = {
-      ...state.currentQuestion,
-      chosenAnswer: action.answer.chosenAnswer,
-      selectionTime: action.answer.selectionTime,
+      ...existingCurrentQuestion,
+      chosenAnswerId: chosenAnswerId,
+      selectionTime: action.selectionTime,
     };
     updatedViewedQuestions[currentQuestionIndex] = updatedCurrentQuestion;
 
-    if (
-      action.answer.chosenAnswer.headshot.url ===
-      state.currentQuestion.correctAnswer.headshot.url
-    ) {
+    if (chosenAnswerId === updatedCurrentQuestion.correctAnswerId) {
       totalCorrect = state.correctAnswers + 1;
     } else {
       totalCorrect = state.correctAnswers;
     }
     return {
       ...state,
-      currentQuestion: updatedCurrentQuestion,
       viewedQuestions: updatedViewedQuestions,
       correctAnswers: totalCorrect,
     };
   }
   if (action.type === GameContextActionTypes.NavigateBack) {
-    const currentQuestionIndex = state.currentQuestion.questionNumber - 1;
-    const previousQuestion = state.viewedQuestions[currentQuestionIndex - 1];
-    if (currentQuestionIndex > 0) {
-      return { ...state, currentQuestion: previousQuestion };
+    const updatedQuestionNumber = state.currentQuestionNumber - 1;
+    if (updatedQuestionNumber > 0) {
+      return { ...state, currentQuestionNumber: updatedQuestionNumber };
     } else {
       return { ...defaultGameSession };
     }
   }
   if (action.type === GameContextActionTypes.NextViewedQuestion) {
-    const newCurrentQuestion =
-      state.viewedQuestions[state.currentQuestion.questionNumber];
-    return { ...state, currentQuestion: newCurrentQuestion };
+    const updatedQuestionNumber = state.currentQuestionNumber + 1;
+    return { ...state, currentQuestionNumber: updatedQuestionNumber };
   }
   if (action.type === GameContextActionTypes.ClearContext) {
     return { ...defaultGameSession };
   }
   if (action.type === GameContextActionTypes.Restore) {
-    localStorage.setItem("game-state", JSON.stringify(action.existingSession));
-    return { ...action.existingSession };
+    localStorage.setItem(
+      "game-state",
+      JSON.stringify(action.existingGameState)
+    );
+    return { ...action.existingGameState };
   }
   if (action.type === GameContextActionTypes.StoreData) {
     return { ...state, employeeData: action.employeeData };
